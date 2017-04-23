@@ -2,6 +2,9 @@ from flask import Flask, request, redirect
 from twilio.twiml.messaging_response import MessagingResponse, Message
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
+import requests
+
+
 
 app = Flask(__name__)
 last_url = []
@@ -24,13 +27,24 @@ def text_receive():
     if from_number:
         PhoneNumbers.append(from_number)
     print PhoneNumbers
+
+
+    #post to thingspace
+    #https://thingspace.io/dweet/for/my-thing-name?key=value
+
+    url = 'https://thingspace.io/dweet/for/telephone4telephones' # Set destination URL here
+    post_fields = {'Number of Phones': len(PhoneNumbers),'New Phone': from_number}     # Set POST fields here
+
+    r = requests.post(url, post_fields)
+    #urllib2.urlopen("https://thingspace.io/dweet/for/my-thing-name?key=value").read()
+
+
     resp = MessagingResponse().message(from_number)
     return str(resp)
 
 @app.route("/next-call", methods=['GET', 'POST'])
 def next_call():
     resp = VoiceResponse()
-    PhoneNumbers.pop();
     print "--"
     print last_url
     print "--"
@@ -60,13 +74,14 @@ def handle_recording():
 
     last_url.append(request.values.get("RecordingUrl", None))
     if PhoneNumbers:
-        call = client.api.account.calls.create(to=PhoneNumbers.peek(),  # Any phone number
+        call = client.api.account.calls.create(to=PhoneNumbers.pop(),  # Any phone number
             from_="+12013971017", # Must be a valid Twilio number
             url="http://f81a966a.ngrok.io/next-call")
+    '''
     else:
-        call = client.api.account.calls.create(to=PhoneNumbers.peek(),  # Any phone number
+        call = client.api.account.calls.create(to=PhoneNumbers.pop(),  # Any phone number
             from_="+12013971017", # Must be a valid Twilio number
-            url="http://f81a966a.ngrok.io/last-call")
+            url="http://f81a966a.ngrok.io/last-call")'''
 
 
     resp.say("Goodbye.")
@@ -78,7 +93,7 @@ def begin_calls():
     PhoneNumbers.reverse()
 
     if PhoneNumbers:
-        call = client.api.account.calls.create(to=PhoneNumbers.peek(),  # Any phone number
+        call = client.api.account.calls.create(to=PhoneNumbers.pop(),  # Any phone number
             from_="+12013971017", # Must be a valid Twilio number
             url="http://f81a966a.ngrok.io/next-call")
 
