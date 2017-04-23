@@ -39,8 +39,7 @@ def text_receive():
     r = requests.post(url, post_fields)
     #urllib2.urlopen("https://thingspace.io/dweet/for/my-thing-name?key=value").read()
 
-
-    resp = MessagingResponse().message(from_number)
+    resp = MessagingResponse().message("Thanks for playing "+numberFormat)
     return str(resp)
 
 @app.route("/next-call", methods=['GET', 'POST'])
