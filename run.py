@@ -33,7 +33,8 @@ def text_receive():
     #https://thingspace.io/dweet/for/my-thing-name?key=value
 
     url = 'https://thingspace.io/dweet/for/telephone4telephones' # Set destination URL here
-    post_fields = {'Number of Phones': len(PhoneNumbers),'New Phone': from_number}     # Set POST fields here
+    numberFormat = "("+(from_number[2:5])+") "+(from_number[5:8])+"-"+(from_number[8:12])
+    post_fields = {'Number of Phones': len(PhoneNumbers),'New Phone': numberFormat}     # Set POST fields here
 
     r = requests.post(url, post_fields)
     #urllib2.urlopen("https://thingspace.io/dweet/for/my-thing-name?key=value").read()
